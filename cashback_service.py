@@ -10,14 +10,14 @@ from typing import Dict, List
 DATA_FILE = "cashback_data.json"
 
 
-class CashbackBot:
+class CashbackService:
     def __init__(self):
         self.data = self.load_data()
 
     def load_data(self) -> Dict:
         """
         Загрузка данных из файла
-        :return: словарь с данными о кешбеках
+        :return: словарь с данными о кешбэках
         """
         if os.path.exists(DATA_FILE):
             try:
@@ -31,7 +31,7 @@ class CashbackBot:
     def get_default_data() -> Dict:
         """
         Получение данных по умолчанию
-        :return: словарь с данными о кешбеках по умолчанию
+        :return: словарь с данными о кешбэках по умолчанию
         """
         current_month = datetime.now().strftime("%Y-%m")
         return {
@@ -71,9 +71,9 @@ class CashbackBot:
     def get_cashback_info(self, bank: str = None, category: str = None) -> str:
         """
         :param bank: банк
-        :param category: категория кешбека
-        Получение данных о кешбеке
-        :return: Форматированный вывод с данными о кешбеках
+        :param category: категория кешбэка
+        Получение данных о кешбэке
+        :return: Форматированный вывод с данными о кешбэках
         """
         result = []
 
@@ -122,11 +122,11 @@ class CashbackBot:
 
     def update_cashback(self, bank: str, category: str, percent: float) -> bool:
         """
-        Обновление значения кешбека
+        Обновление значения кешбэка
         :param bank: банк
-        :param category: категория кешбека
+        :param category: категория кешбэка
         :param percent: проценты
-        :return: Категория кешбека обновлена
+        :return: Категория кешбэка обновлена
         """
         if bank in self.data.get("banks", dict()):
             if category in self.data.get("banks", dict()).get(bank, dict()).get("categories", dict()):
@@ -150,11 +150,11 @@ class CashbackBot:
 
     def add_category(self, bank: str, category: str, percent: float) -> bool:
         """
-        Добавление категории кешбека
+        Добавление категории кешбэка
         :param bank: банк
-        :param category: категория кешбека
+        :param category: категория кешбэка
         :param percent: проценты
-        :return: Категория кешбека добавлена
+        :return: Категория кешбэка добавлена
         """
         if bank in self.data.get("banks", dict()):
             if category not in self.data.get("banks", dict()).get(bank, dict()).get("categories", dict()):
@@ -178,10 +178,10 @@ class CashbackBot:
 
     def delete_category(self, bank: str, category: str) -> bool:
         """
-        Удаление категории кешбека
+        Удаление категории кешбэка
         :param bank: банк
-        :param category: категория кешбека
-        :return: Категория кешбека удалена
+        :param category: категория кешбэка
+        :return: Категория кешбэка удалена
         """
         if bank in self.data.get("banks", dict()):
             if category in self.data.get("banks", dict()).get(bank, dict()).get("categories", dict()):
