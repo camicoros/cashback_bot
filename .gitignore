@@ -208,3 +208,6 @@ __marimo__/
 
 # visual studio code
 .idea/
+
+# project files
+cashback_data.json
