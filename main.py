@@ -4,7 +4,7 @@ CASHBACK TELEGRAM BOT
 import json
 import os.path
 from datetime import datetime
-from typing import Dict
+from typing import Dict, List
 
 
 DATA_FILE = "cashback_data.json"
@@ -70,6 +70,8 @@ class CashbackBot:
 
     def get_cashback_info(self, bank: str = None, category: str = None) -> str:
         """
+        :param bank: банк
+        :param category: категория кешбека
         Получение данных о кешбеке
         :return: Форматированный вывод с данными о кешбеках
         """
@@ -108,8 +110,91 @@ class CashbackBot:
         result.append(f"\n Обновлено: {self.data.get("last_update")}\n")
         return "\n".join(result)
 
+    def get_categories_list(self, bank: str) -> List[str]:
+        """
+        Получение списка категорий для банка
+        :param bank: банк
+        :return: Список категорий конкретного банка
+        """
+        if bank in self.data.get("banks", dict()):
+            return list(self.data.get("banks").get(bank, dict()).get("categories").keys())
+        return []
+
+    def update_cashback(self, bank: str, category: str, percent: float) -> bool:
+        """
+        Обновление значения кешбека
+        :param bank: банк
+        :param category: категория кешбека
+        :param percent: проценты
+        :return: Категория кешбека обновлена
+        """
+        if bank in self.data.get("banks", dict()):
+            if category in self.data.get("banks", dict()).get(bank, dict()).get("categories", dict()):
+                self.data.get("banks").get(bank).get("categories")[category] = percent
+                self.data["last_update"] = datetime.now().strftime("%Y-%m")
+                self.save_data()
+                return True
+        return False
+
+    def add_bank(self, bank_name: str) -> bool:
+        """
+        Добавление нового банка
+        :param bank_name: название банка
+        :return: банк добавлен
+        """
+        if bank_name not in self.data.get("banks"):
+            self.data.get("banks")[bank_name] = {"categories": {}}
+            self.save_data()
+            return True
+        return False
+
+    def add_category(self, bank: str, category: str, percent: float) -> bool:
+        """
+        Добавление категории кешбека
+        :param bank: банк
+        :param category: категория кешбека
+        :param percent: проценты
+        :return: Категория кешбека добавлена
+        """
+        if bank in self.data.get("banks", dict()):
+            if category not in self.data.get("banks", dict()).get(bank, dict()).get("categories", dict()):
+                self.data.get("banks").get(bank).get("categories")[category] = percent
+                self.data["last_update"] = datetime.now().strftime("%Y-%m")
+                self.save_data()
+                return True
+        return False
+
+    def delete_bank(self, bank_name: str) -> bool:
+        """
+        Удаление банка
+        :param bank_name: название банка
+        :return: банк удален
+        """
+        if bank_name in self.data.get("banks"):
+            del self.data.get("banks")[bank_name]
+            self.save_data()
+            return True
+        return False
+
+    def delete_category(self, bank: str, category: str) -> bool:
+        """
+        Удаление категории кешбека
+        :param bank: банк
+        :param category: категория кешбека
+        :return: Категория кешбека удалена
+        """
+        if bank in self.data.get("banks", dict()):
+            if category in self.data.get("banks", dict()).get(bank, dict()).get("categories", dict()):
+                del self.data.get("banks").get(bank).get("categories")[category]
+                self.data["last_update"] = datetime.now().strftime("%Y-%m")
+                self.save_data()
+                return True
+        return False
+
 
 if __name__ == "__main__":
+    if os.path.exists(DATA_FILE):
+        os.remove(DATA_FILE)
     bot = CashbackBot()
     print(bot.data)
     bot.save_data()
@@ -127,3 +212,27 @@ if __name__ == "__main__":
     print(bot.get_cashback_info(category="Аптеки"))
     print("Сладости информация")
     print(bot.get_cashback_info(category="Сладости"))
+    print("get_categories_list sber")
+    print(bot.get_categories_list("sber"))
+    print("get_categories_list vtb")
+    print(bot.get_categories_list("vtb"))
+    print("update_cashback sber Аптеки 10")
+    print(bot.update_cashback("sber", "Аптеки", 10))
+    print("update_cashback sber Сладости 10")
+    print(bot.update_cashback("sber", "Сладости", 10))
+    print("add_bank vtb")
+    print(bot.add_bank("vtb"))
+    print("add_bank sber")
+    print(bot.add_bank("sber"))
+    print("add_category sber Топливо")
+    print(bot.add_category("sber", "Топливо", 5))
+    print("add_category sber Аптеки")
+    print(bot.add_category("sber", "Аптеки", 5))
+    print("delete_bank vtb")
+    print(bot.delete_bank("vtb"))
+    print("delete_bank psb")
+    print(bot.delete_bank("psb"))
+    print("delete_category sber Топливо")
+    print(bot.delete_category("sber", "Топливо"))
+    print("delete_category sber Театр")
+    print(bot.delete_category("sber", "Театр"))
