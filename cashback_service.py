@@ -195,7 +195,7 @@ class CashbackService:
 if __name__ == "__main__":
     if os.path.exists(DATA_FILE):
         os.remove(DATA_FILE)
-    bot = CashbackBot()
+    bot = CashbackService()
     print(bot.data)
     bot.save_data()
     print("общая информация")
